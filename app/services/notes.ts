@@ -15,10 +15,8 @@ export const getNotes = async () => {
   return await db.query.notes.findMany() as Note[];
 }
 
-let nextId = 4
-
 export const addNote = async (content: string, important: boolean) => {
-  return db.insert(notes).values({ id: nextId++, content, important })
+  return db.insert(notes).values({ content, important })
 }
 
 export const getNoteById = async (id: number) => {
