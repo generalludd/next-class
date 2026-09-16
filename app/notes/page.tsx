@@ -7,27 +7,27 @@ const Notes = async ({
 }: {
   searchParams: Promise<{ important?: string, liked?: string, query?: string }>
 }) => {
-  const { important, liked, query } = await searchParams
-  const showImportant = important === "true"
-  const showLiked = liked === "true"
-  const allNotes = getNotes()
+  const { important, liked, query } = await searchParams;
+  const showImportant = important === "true";
+  const showLiked = liked === "true";
+  const allNotes = await getNotes();
   let notes = showLiked
-    ? allNotes.filter((note) =>  note.likes && note.likes > 0)
-    : allNotes
+    ? allNotes.filter((note) => note.likes && note.likes > 0)
+    : allNotes;
 
   // Additionally filter the notes by importance if the "important" query parameter is set to "true"
   if (showImportant) {
-    notes = notes.filter((note) => note.important)
+    notes = notes.filter((note) => note.important);
   }
   // Limit the list to terms that match the filter query parameter if it is provided
   if (query) {
-    notes = notes.filter((note) => note.content.toLowerCase().includes(query.toLowerCase()))
+    notes = notes.filter((note) => note.content.toLowerCase().includes(query.toLowerCase()));
   }
   // Sort the notes by importance, with important notes first
   notes.sort((a, b) => {
     if (a.important && !b.important) return -1
     if (!a.important && b.important) return 1
-    return 0
+    return 0;
   })
 
   return (

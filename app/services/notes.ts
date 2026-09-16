@@ -1,3 +1,6 @@
+import { eq } from "drizzle-orm"
+import { db } from "../../db"
+import { notes } from "../../db/schema"
 type Note = {
   id: number,
   content: string,
@@ -6,43 +9,41 @@ type Note = {
   url?: string,
   likes?: number
 }
-const notes = [
-  <Note>{ id: 1, content: "next.js utilizes React Server Components", important: true, author: "John Doe", url: "https://nextjs.org/docs/getting-started/react-essentials/react-server-components" },
-  <Note>{ id: 2, content: "next.js is built on top of React", important: true, author: "John Doe", url: "https://nextjs.org/docs/getting-started/react-essentials/react-server-components" },
-  <Note>{
-    id: 3,
-    content: "next.js supports both static and dynamic rendering",
-    important: false,
-    liked: false,
-    url: "https://nextjs.org/docs/getting-started/react-essentials/react-server-components",
-    author: "John Doe"
-  },
-]
+
+
+export const getNotes = async () => {
+  return await db.query.notes.findMany() as Note[];
+}
 
 let nextId = 4
 
-export const getNotes = () => {
-  return notes
+export const addNote = async (content: string, important: boolean) => {
+  return db.insert(notes).values({ id: nextId++, content, important })
 }
 
-export const addNote = (content: string, important: boolean) => {
-  notes.push({ id: nextId++, content, important })
+export const getNoteById = async (id: number) => {
+  const [note] = await db.select().from(notes).where(eq(notes.id, id))
+  return note as Note | undefined
 }
 
-export const getNoteById = (id: number) => {
-  return notes.find((note) => note.id === id)
-}
-
-export const toggleImportance = (id: number) => {
-  const note = notes.find((note) => note.id === id)
+export const toggleImportance = async (id: number) => {
+  const note = await getNoteById(id);
+  if (!note) {
+    throw new Error(`Note with id ${id} not found`);
+  }
   if (note) {
     note.important = !note.important
   }
+
+  // Now save the note to the database.
+  await db.update(notes).set({ important: note.important }).where(eq(notes.id, id));
 }
 
-export const toggleLike = (id: number, like: boolean) => {
-  const note = notes.find((note) => note.id === id)
+export const toggleLike = async (id: number, like: boolean) => {
+  const note = await getNoteById(id) as Note | undefined;
   if (note) {
     note.likes = like ? (note.likes || 0) + 1 : Math.max(0, (note.likes || 0) - 1);
+    // Now save the note to the database.
+    await db.update(notes).set({ likes: note.likes }).where(eq(notes.id, id));
   }
 }
