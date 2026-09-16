@@ -8,7 +8,7 @@ export const notes = pgTable("notes", {
   author: text("author"),
   url: text("url"),
   likes: serial("likes").default(0),
-  userID: integer("userID").references(() => users.id)
+  userID: integer("userID").notNull().references(() => users.id)
 });
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
