@@ -18,6 +18,20 @@ export const createNote = async (
   if (!content || content.length < 10) {
     return { error: "Note content must be at least 10 characters long" }
   }
+  const author = formData.get("author") as string
+  if (!author || author.length < 5) {
+    return { error: "Author name must be at least 5 characters long" }
+  }
+  const url = formData.get("url") as string
+  if (url && !url.startsWith("http")) {
+    return { error: "Invalid URL format" }
+  }
+
+  const title = formData.get("title") as string
+  if (!title || title.length < 5) {
+    return { error: "Title must be at least 5 characters long" }
+  }
+
   const important = formData.get("important") === "on"
   await addNote(content, important)
 
