@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/auth"
-import { addNote, toggleImportance } from "../services/notes"
+import { addNote, toggleImportance, toggleLike } from "../services/notes"
 
 export const createNote = async (
   prevState: { error: string },
@@ -33,7 +33,7 @@ export const createNote = async (
   }
 
   const important = formData.get("important") === "on"
-  await addNote(content, important)
+  await addNote(content, important, author, title, url)
 
   revalidatePath("/notes")
   redirect("/notes")
@@ -45,3 +45,13 @@ export const toggleNoteImportance = async (formData: FormData) => {
   revalidatePath(`/notes/${id}`)
   revalidatePath("/notes")
 }
+
+
+export const toggleNoteLike = async (formData: FormData) => {
+  const id = Number(formData.get("id"))
+  const like = formData.get("like") === "on"
+  await toggleLike(id, like)
+  revalidatePath(`/notes/${id}`)
+  revalidatePath("/notes")
+}
+

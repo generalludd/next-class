@@ -18,6 +18,25 @@ const NewNote = () => {
         </div>
         <div>
           <label>
+            Author
+            <input type="text" name="author" />
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Title
+            <input type="text" name="title" />
+          </label>
+        </div>
+        <div>
+          <label>
+            URL
+            <input type="text" name="url" />
+          </label>
+        </div>
+        <div>
+          <label>
             <input type="checkbox" name="important" />
             Important
           </label>

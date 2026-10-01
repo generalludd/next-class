@@ -16,12 +16,13 @@ export const getNotes = async () => {
   return await db.query.notes.findMany() as Note[];
 }
 
-export const addNote = async (content: string, important: boolean) => {
+export const addNote = async (content: string, important: boolean, author?: string, title?: string, url?: string) => {
   const user = await getCurrentUser()
   if (!user) {
     throw new Error("Not logged in")
   }
-  return db.insert(notes).values({ content, important })
+  console.log("Adding note with content:", content, "important:", important, "author:", author, "title:", title, "url:", url, "userId:", user.id);
+  return db.insert(notes).values({ content, important, author, title, url, userId: user.id }).returning();
 }
 
 export const getNoteById = async (id: number) => {
